@@ -5,15 +5,23 @@ extension JSONValue : Printable {
         get {
             switch self {
             case let .JSONString(string):
-                return "\"\(string)\"\n"
+                var escapedString = string.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
+                return "\"\(escapedString)\""
             case let .JSONBool(bool):
-                return bool ? "true\n" : "false\n"
+                return bool ? "true" : "false"
             case let .JSONDictionary(jsonObject):
-                var descr = "{\n"
+                var descr = "{"
+                var first = true
+
                 for (key, value) in jsonObject {
-                    descr += String("\t\"" + key + "\" : " + value.description + "\n")
+                    if !first {
+                        descr += ","
+                    }
+                    
+                    descr += String("\n\t\"" + key + "\" : " + value.description)
+                    first = false
                 }
-                descr += "}\n"
+                descr += "\n}"
                 return descr
             case let .JSONNumber(number):
                 return "\(number)"
@@ -22,15 +30,17 @@ extension JSONValue : Printable {
                 var first = true
                 for value in array {
                     if !first {
-                        descr += ", "
+                        descr += ","
+                        
                     }
-                    descr += value.description
+                    
+                    descr += String("\n" + value.description)
                     first = false
                 }
-                descr += "]\n"
+                descr += "\n]"
                 return descr
             case let .JSONNull:
-                return "NULL\n"
+                return "null"
             case let .JSONError(error):
                 if error != nil {
                     return "Error: \(error!.description)\n"
