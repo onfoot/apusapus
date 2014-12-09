@@ -29,7 +29,7 @@ public extension JSONValue {
         }
     }
     
-    func asNumber () -> Double? {
+    func asNumber () -> NSNumber? {
         switch self {
         case let .JSONNumber(number):
             return number
@@ -86,7 +86,7 @@ public extension JSONValue {
         }
     }
     
-    var number: Double! {
+    var number: NSNumber! {
         get {
             return asNumber()
         }

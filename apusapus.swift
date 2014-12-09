@@ -4,7 +4,7 @@ public enum JSONValue {
     case JSONDictionary([String:JSONValue])
     case JSONArray([JSONValue])
     case JSONString(String)
-    case JSONNumber(Double)
+    case JSONNumber(NSNumber)
     case JSONBool(Bool)
     case JSONNull
     case JSONError(NSError?)
@@ -19,25 +19,28 @@ public extension JSONValue {
         case let dict as NSDictionary:
             var jsonDict : [String:JSONValue] = [:]
             
-            dict.enumerateKeysAndObjectsUsingBlock({ (keyObject, valueObject, stop) -> Void in
-                if let keyString = keyObject as? String {
-                    jsonDict[keyString] = JSONValue.fromJSONObject(valueObject!)
+            for key in dict.allKeys {
+                if let keyString = key as? String {
+                    jsonDict[keyString] = JSONValue.fromJSONObject(dict[keyString]!)
                 }
-            })
+            }
             
             return JSONValue.JSONDictionary(jsonDict)
         case let array as NSArray:
-            var jsonArray : [JSONValue] = []
-            array.enumerateObjectsUsingBlock({ (valueObject, index, stop) -> Void in
+            var jsonArray = [JSONValue]()
+            jsonArray.reserveCapacity(array.count)
+
+            for valueObject in array {
                 jsonArray.append(JSONValue.fromJSONObject(valueObject))
-            })
+            }
+            
             return JSONValue.JSONArray(jsonArray)
         case let number as NSNumber:
             let typeString = NSString(CString: number.objCType, encoding: NSASCIIStringEncoding)!
             if typeString == "c" {
                 return JSONValue.JSONBool(number.boolValue)
             } else {
-                return JSONValue.JSONNumber(number.doubleValue)
+                return JSONValue.JSONNumber(number)
             }
         case let string as String :
             return JSONValue.JSONString(string)
