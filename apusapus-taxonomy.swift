@@ -42,7 +42,7 @@ public extension JSONValue {
             if let dictionary = self.asDictionary() {
                 
                 for (key, value) in descriptionDictionary {
-                    if dictionary[key] != nil && !dictionary[key]!.matchesDescription(value) {
+                    if dictionary[key] == nil || (dictionary[key] != nil && !dictionary[key]!.matchesDescription(value)) {
                         isValid = false
                     }
                 }
