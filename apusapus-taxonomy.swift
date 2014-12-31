@@ -6,6 +6,8 @@ public enum JSONDescription {
     case JSONString
     case JSONNumber
     case JSONBool
+    case JSONStringOptional
+    case JSONNumberOptional
 }
 
 public extension JSONValue {
@@ -35,6 +37,16 @@ public extension JSONValue {
                 return true
             }
             
+        case let .JSONStringOptional:
+            if self.isNull() || self.asString() != nil {
+                return true
+            }
+            
+        case let .JSONNumberOptional:
+            if self.isNull() || self.asNumber() != nil {
+                return true
+            }
+            
         case let .JSONDictionary(descriptionDictionary):
             
             var isValid = true
@@ -42,9 +54,9 @@ public extension JSONValue {
             if let dictionary = self.asDictionary() {
                 
                 for (key, value) in descriptionDictionary {
-                    if dictionary[key] == nil || (dictionary[key] != nil && !dictionary[key]!.matchesDescription(value)) {
-                        isValid = false
-                    }
+                        if dictionary[key] != nil && !dictionary[key]!.matchesDescription(value) {
+                            isValid = false
+                        }
                 }
                 
             } else {
