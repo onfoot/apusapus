@@ -1,7 +1,7 @@
 
 
 public extension JSONValue {
-    func asDictionary () -> [String:JSONValue]? {
+    func asDictionary () -> [NSString:JSONValue]? {
         
         switch self {
         case let .JSONDictionary(dict):
@@ -68,7 +68,7 @@ public extension JSONValue {
 }
 
 public extension JSONValue {
-    var dictionary : [String:JSONValue]! {
+    var dictionary : [NSString:JSONValue]! {
         get {
             return asDictionary()
         }

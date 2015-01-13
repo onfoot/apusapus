@@ -1,9 +1,9 @@
 import Foundation
 
 public enum JSONValue {
-    case JSONDictionary([String:JSONValue])
+    case JSONDictionary([NSString:JSONValue])
     case JSONArray([JSONValue])
-    case JSONString(String)
+    case JSONString(NSString)
     case JSONNumber(NSNumber)
     case JSONBool(Bool)
     case JSONNull
@@ -17,12 +17,11 @@ public extension JSONValue {
         case let null as NSNull:
             return JSONValue.JSONNull
         case let dict as NSDictionary:
-            var jsonDict : [String:JSONValue] = [:]
+            var jsonDict : [NSString:JSONValue] = [:]
             
             for key in dict.allKeys {
-                if let keyString = key as? String {
-                    jsonDict[keyString] = JSONValue.fromJSONObject(dict[keyString]!)
-                }
+                let keyString = key as NSString
+                jsonDict[keyString] = JSONValue.fromJSONObject(dict[keyString]!)
             }
             
             return JSONValue.JSONDictionary(jsonDict)

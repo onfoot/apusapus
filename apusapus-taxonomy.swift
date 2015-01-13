@@ -1,7 +1,7 @@
 
 
 public enum JSONDescription {
-    case JSONDictionary([String:JSONDescription])
+    case JSONDictionary([NSString:JSONDescription])
     case JSONArray
     case JSONString
     case JSONNumber
