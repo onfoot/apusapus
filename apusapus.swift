@@ -5,7 +5,7 @@ public enum JSONValue {
     case JSONArray([JSONValue])
     case JSONString(NSString)
     case JSONNumber(NSNumber)
-    case JSONBool(Bool)
+    case JSONBool(NSNumber)
     case JSONNull
     case JSONError(NSError?)
 }
@@ -17,27 +17,26 @@ public extension JSONValue {
         case let null as NSNull:
             return JSONValue.JSONNull
         case let dict as NSDictionary:
-            var jsonDict : [NSString:JSONValue] = [:]
-            
-            for key in dict.allKeys {
-                let keyString = key as NSString
-                jsonDict[keyString] = JSONValue.fromJSONObject(dict[keyString]!)
-            }
+            var jsonDict = [NSString:JSONValue]()
+            dict.enumerateKeysAndObjectsUsingBlock({ (key, object, stop) -> Void in
+                if let keyString = key as? NSString {
+                    jsonDict[keyString] = JSONValue.fromJSONObject(object)
+                }
+            })
             
             return JSONValue.JSONDictionary(jsonDict)
         case let array as NSArray:
             var jsonArray = [JSONValue]()
             jsonArray.reserveCapacity(array.count)
 
-            for valueObject in array {
-                jsonArray.append(JSONValue.fromJSONObject(valueObject))
-            }
+            array.enumerateObjectsUsingBlock({ (object, index, stop) -> Void in
+                jsonArray.append(JSONValue.fromJSONObject(object))
+            })
             
             return JSONValue.JSONArray(jsonArray)
         case let number as NSNumber:
-            let typeString = NSString(CString: number.objCType, encoding: NSASCIIStringEncoding)!
-            if typeString == "c" {
-                return JSONValue.JSONBool(number.boolValue)
+            if number.objCType.memory == 99 {
+                return JSONValue.JSONBool(number)
             } else {
                 return JSONValue.JSONNumber(number)
             }
@@ -50,10 +49,58 @@ public extension JSONValue {
 
     static func fromJSONData(data: NSData) -> JSONValue {
         var error : NSError?
+        let start = NSDate().timeIntervalSince1970
         if let jsonObject: AnyObject = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &error) {
+            let end = NSDate().timeIntervalSince1970 - start
+            NSLog("Parse time \(end*1000)ms")
             return JSONValue.fromJSONObject(jsonObject)
         }
         
         return JSONValue.JSONError(error)
     }
+}
+
+extension JSONValue {
+
+    public var count : Int {
+        get {
+            switch self {
+            case let .JSONArray(array):
+                return array.count
+            case let .JSONDictionary(dict):
+                return dict.count
+            default:
+                return 0
+            }
+        }
+    }
+    
+    
+    public subscript(index: Int) -> JSONValue {
+        get {
+            switch self {
+            case let .JSONArray(array):
+                precondition(index >= 0 && index < array.count, "Array index out of bounds")
+                return array[index]
+            default:
+                return .JSONNull
+            }
+        }
+    }
+    
+    public subscript(key: String) -> JSONValue {
+        get {
+            switch self {
+            case let .JSONDictionary(dict):
+                if let value = dict[key] {
+                    return value
+                } else {
+                    return .JSONNull
+                }
+            default:
+                return .JSONNull
+            }
+        }
+    }
+
 }

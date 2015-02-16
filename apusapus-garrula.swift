@@ -1,4 +1,4 @@
-
+import Foundation
 
 extension JSONValue : Printable {
     public var description : String {
@@ -7,8 +7,8 @@ extension JSONValue : Printable {
             case let .JSONString(string):
                 var escapedString = string.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
                 return "\"\(escapedString)\""
-            case let .JSONBool(bool):
-                return bool ? "true" : "false"
+            case let .JSONBool(number):
+                return number.boolValue ? "true" : "false"
             case let .JSONDictionary(jsonObject):
                 var descr = "{"
                 var first = true
@@ -18,7 +18,7 @@ extension JSONValue : Printable {
                         descr += ","
                     }
                     
-                    descr += String("\n\t\"" + key + "\" : " + value.description)
+                    descr += String("\n\t\"" + (key as String) + "\" : " + value.description)
                     first = false
                 }
                 descr += "\n}"

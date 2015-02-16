@@ -1,4 +1,4 @@
-
+import Foundation
 
 public extension JSONValue {
     func asDictionary () -> [NSString:JSONValue]? {
@@ -23,7 +23,7 @@ public extension JSONValue {
     func asString () -> String? {
         switch self {
         case let .JSONString(string):
-            return string
+            return string as String
         default:
             return nil
         }
@@ -41,7 +41,7 @@ public extension JSONValue {
     func asBool () -> Bool? {
         switch self {
         case let .JSONBool(bool):
-            return bool
+            return bool.boolValue
         default:
             return nil
         }

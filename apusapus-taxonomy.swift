@@ -1,4 +1,4 @@
-
+import Foundation
 
 public enum JSONDescription {
     case JSONDictionary([NSString:JSONDescription])
