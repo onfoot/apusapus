@@ -49,10 +49,7 @@ public extension JSONValue {
 
     static func fromJSONData(data: NSData) -> JSONValue {
         var error : NSError?
-        let start = NSDate().timeIntervalSince1970
         if let jsonObject: AnyObject = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &error) {
-            let end = NSDate().timeIntervalSince1970 - start
-            NSLog("Parse time \(end*1000)ms")
             return JSONValue.fromJSONObject(jsonObject)
         }
         
