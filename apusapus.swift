@@ -48,15 +48,12 @@ public extension JSONValue {
     }
 
     static func fromJSONData(data: NSData) -> JSONValue {
-        var error : NSError?
         do {
             let jsonObject: AnyObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments)
             return JSONValue.fromJSONObject(jsonObject)
-        } catch let error1 as NSError {
-            error = error1
+        } catch let error as NSError {
+            return JSONValue.JSONError(error)
         }
-        
-        return JSONValue.JSONError(error)
     }
 }
 
