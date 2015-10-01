@@ -48,22 +48,19 @@ public extension JSONValue {
             }
             
         case let .JSONDictionary(descriptionDictionary):
+            guard let dictionary = self.asDictionary() else {
+                return false
+            }
+            
             var isValid = true
             
-            if let dictionary = self.asDictionary() {
-                
-                for (key, value) in descriptionDictionary {
-                        if dictionary[key] == nil || (dictionary[key] != nil && !dictionary[key]!.matchesDescription(value)) {
-                            isValid = false
-                        }
+            for (key, value) in descriptionDictionary {
+                if dictionary[key] == nil || (dictionary[key] != nil && !dictionary[key]!.matchesDescription(value)) {
+                    isValid = false
                 }
-                
-            } else {
-                isValid = false
             }
             
             return isValid
-
         }
 
         return false
