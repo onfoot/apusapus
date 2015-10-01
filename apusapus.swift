@@ -14,7 +14,7 @@ public extension JSONValue {
     
     static func fromJSONObject(object : AnyObject) -> JSONValue {
         switch object {
-        case let null as NSNull:
+        case _ as NSNull:
             return JSONValue.JSONNull
         case let dict as NSDictionary:
             var jsonDict = [NSString:JSONValue]()
@@ -49,8 +49,11 @@ public extension JSONValue {
 
     static func fromJSONData(data: NSData) -> JSONValue {
         var error : NSError?
-        if let jsonObject: AnyObject = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments, error: &error) {
+        do {
+            let jsonObject: AnyObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments)
             return JSONValue.fromJSONObject(jsonObject)
+        } catch let error1 as NSError {
+            error = error1
         }
         
         return JSONValue.JSONError(error)

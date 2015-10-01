@@ -1,11 +1,11 @@
 import Foundation
 
-extension JSONValue : Printable {
+extension JSONValue : CustomStringConvertible {
     public var description : String {
         get {
             switch self {
             case let .JSONString(string):
-                var escapedString = string.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
+                let escapedString = string.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
                 return "\"\(escapedString)\""
             case let .JSONBool(number):
                 return number.boolValue ? "true" : "false"
@@ -39,7 +39,7 @@ extension JSONValue : Printable {
                 }
                 descr += "\n]"
                 return descr
-            case let .JSONNull:
+            case .JSONNull:
                 return "null"
             case let .JSONError(error):
                 if error != nil {
@@ -47,8 +47,6 @@ extension JSONValue : Printable {
                 }
                 
                 return "Error\n"
-            default:
-                return "<UNKNOWN TYPE>\n"
             }
         }
     }

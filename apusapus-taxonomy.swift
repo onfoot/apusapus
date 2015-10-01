@@ -31,24 +31,23 @@ public extension JSONValue {
                 return true
             }
             
-        case let .JSONArray:
+        case .JSONArray:
             
             if self.asArray() != nil {
                 return true
             }
             
-        case let .JSONStringOptional:
+        case .JSONStringOptional:
             if self.isNull() || self.asString() != nil {
                 return true
             }
             
-        case let .JSONNumberOptional:
+        case .JSONNumberOptional:
             if self.isNull() || self.asNumber() != nil {
                 return true
             }
             
         case let .JSONDictionary(descriptionDictionary):
-            
             var isValid = true
             
             if let dictionary = self.asDictionary() {
@@ -64,9 +63,7 @@ public extension JSONValue {
             }
             
             return isValid
-            
-        default:
-            break
+
         }
 
         return false

@@ -3,66 +3,59 @@ import Foundation
 public extension JSONValue {
     func asDictionary () -> [NSString:JSONValue]? {
         
-        switch self {
-        case let .JSONDictionary(dict):
+        if case let .JSONDictionary(dict) = self {
             return dict
-        default:
-            return nil
         }
+        
+        return nil
     }
     
     func asArray () -> [JSONValue]? {
-        switch self {
-        case let .JSONArray(array):
+        if case let .JSONArray(array) = self {
             return array
-        default:
-            return nil
         }
+        
+        return nil
     }
     
     func asString () -> String? {
-        switch self {
-        case let .JSONString(string):
+        if case let .JSONString(string) = self {
             return string as String
-        default:
-            return nil
         }
+        
+        return nil
     }
     
     func asNumber () -> NSNumber? {
-        switch self {
-        case let .JSONNumber(number):
+        if case let .JSONNumber(number) = self {
             return number
-        default:
-            return nil
         }
+        
+        return nil
     }
     
     func asBool () -> Bool? {
-        switch self {
-        case let .JSONBool(bool):
+        if case let .JSONBool(bool) = self {
             return bool.boolValue
-        default:
-            return nil
         }
+        
+        return nil
     }
     
     func asError () -> (Bool, NSError?)? {
-        switch self {
-        case let .JSONError(error):
+        if case let .JSONError(error) = self {
             return (true, error)
-        default:
-            return (false, nil)
         }
+        
+        return (false, nil)
     }
     
     func isNull () -> Bool {
-        switch self {
-        case let .JSONNull:
+        if case .JSONNull = self {
             return true
-        default:
-            return false
         }
+        
+        return false
     }
     
 }
