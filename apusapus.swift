@@ -52,7 +52,6 @@ public extension JSONValue {
             return JSONValue.fromJSONObject(jsonObject)
         } catch let error as NSError {
             throw error
-//            return JSONValue.JSONError(error)
         }
     }
 }
