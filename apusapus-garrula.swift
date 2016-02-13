@@ -41,12 +41,6 @@ extension JSONValue : CustomStringConvertible {
                 return descr
             case .JSONNull:
                 return "null"
-            case let .JSONError(error):
-                if error != nil {
-                    return "Error: \(error!.description)\n"
-                }
-                
-                return "Error\n"
             }
         }
     }

@@ -42,14 +42,6 @@ public extension JSONValue {
         return nil
     }
     
-    func asError () -> (Bool, NSError?)? {
-        if case let .JSONError(error) = self {
-            return (true, error)
-        }
-        
-        return (false, nil)
-    }
-    
     func isNull () -> Bool {
         if case .JSONNull = self {
             return true
@@ -88,12 +80,6 @@ public extension JSONValue {
     var bool: Bool! {
         get {
             return asBool()
-        }
-    }
-    
-    var error: (Bool, NSError?)! {
-        get {
-            return asError()
         }
     }
 }

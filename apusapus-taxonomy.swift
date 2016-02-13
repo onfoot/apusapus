@@ -6,8 +6,7 @@ public enum JSONDescription {
     case JSONString
     case JSONNumber
     case JSONBool
-    case JSONStringOptional
-    case JSONNumberOptional
+    indirect case JSONOptional(JSONDescription)
 }
 
 public extension JSONValue {
@@ -37,14 +36,16 @@ public extension JSONValue {
                 return true
             }
             
-        case .JSONStringOptional:
-            if self.isNull() || self.asString() != nil {
+        case let .JSONOptional(optionalDescription):
+            if self.isNull() {
                 return true
             }
             
-        case .JSONNumberOptional:
-            if self.isNull() || self.asNumber() != nil {
-                return true
+            switch optionalDescription {
+            case .JSONOptional:
+                return false
+            default:
+                return self.matchesDescription(optionalDescription)
             }
             
         case let .JSONDictionary(descriptionDictionary):

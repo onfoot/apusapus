@@ -7,7 +7,6 @@ public enum JSONValue {
     case JSONNumber(NSNumber)
     case JSONBool(NSNumber)
     case JSONNull
-    case JSONError(NSError?)
 }
 
 public extension JSONValue {
@@ -43,16 +42,17 @@ public extension JSONValue {
         case let string as String :
             return JSONValue.JSONString(string)
         default:
-            return JSONValue.JSONError(nil)
+            return JSONValue.JSONNull
         }
     }
 
-    static func fromJSONData(data: NSData) -> JSONValue {
+    static func fromJSONData(data: NSData) throws -> JSONValue {
         do {
             let jsonObject: AnyObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments)
             return JSONValue.fromJSONObject(jsonObject)
         } catch let error as NSError {
-            return JSONValue.JSONError(error)
+            throw error
+//            return JSONValue.JSONError(error)
         }
     }
 }
