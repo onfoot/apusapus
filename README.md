@@ -9,7 +9,7 @@ Basics
 
 JSON data is wrapped with a structure of `JSONValue` enum types and made accessible using either optional type-safe accessors (`asArray`, `asDictionary`, `asNumber`, `asString`, `asBool`) or array/dictionary subscript accessors.
 
-Optionally you can verify the incoming JSON message's structure using a `JSONDescription` structure. If you do that, you can safely use force-unwrapped type accessors (`array`, `dictionary`, `number`, `string`, `bool`) to reduce the amount of type checks in parsing code.
+Optionally you can verify the incoming JSON message's schema using a `JSONDescription` structure. If you do that, you can safely use force-unwrapped type accessors (`array`, `dictionary`, `number`, `string`, `bool`) to reduce the amount of type checks in parsing code.
 
 Examples
 ========
