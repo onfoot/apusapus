@@ -5,22 +5,23 @@ public protocol ApusDecodable {
     static func decode(j: JSONValue) throws -> Self
 }
 
-func DecodeArray<Type : ApusDecodable>(v: JSONValue, failOnError: Bool = true) throws -> [Type] {
+func DecodeArray<Type : ApusDecodable>(v: JSONValue, errorHandler: ((value: JSONValue, error: NSError) throws -> Void)? = nil) throws -> [Type] {
     guard let array = v.asArray() else {
         throw NSError(domain: "apus-apus", code: 406, userInfo: ["details": "DecodeArray - JSONValue is not a JSONArray"])
     }
     
     var items = [Type]()
-
+    
     for value in array {
         do {
             let item = try Type.decode(value)
             items.append(item)
         } catch let err as NSError {
-            if failOnError {
-                throw err
-            } else {
+            if let handler = errorHandler {
+                try handler(value: value, error: err)
                 continue
+            } else {
+                throw err
             }
         }
     }
@@ -28,7 +29,7 @@ func DecodeArray<Type : ApusDecodable>(v: JSONValue, failOnError: Bool = true) t
     return items
 }
 
-func DecodeArray<Type : ApusDecodable>(v: JSONValue, failOnError: Bool = true, bySpreading spread: (Type) -> (key: String, value: Type)) throws -> [String: Type] {
+func DecodeArray<Type : ApusDecodable>(v: JSONValue, errorHandler: ((value: JSONValue, error: NSError) throws -> Void)? = nil, bySpreading spread: (Type) -> (key: String, value: Type)) throws -> [String: Type] {
     guard let array = v.asArray() else {
         throw NSError(domain: "apus-apus", code: 406, userInfo: ["details": "DecodeArray - JSONValue is not a JSONArray"])
     }
@@ -40,10 +41,11 @@ func DecodeArray<Type : ApusDecodable>(v: JSONValue, failOnError: Bool = true, b
             let (key, item) = spread(try Type.decode(value))
             items[key] = item
         } catch let err as NSError {
-            if failOnError {
-                throw err
-            } else {
+            if let handler = errorHandler {
+                try handler(value: value, error: err)
                 continue
+            } else {
+                throw err
             }
         }
     }
@@ -51,7 +53,7 @@ func DecodeArray<Type : ApusDecodable>(v: JSONValue, failOnError: Bool = true, b
     return items
 }
 
-func DecodeDictionary<Type : ApusDecodable>(v: JSONValue, failOnError: Bool = true) throws -> [String: Type] {
+func DecodeDictionary<Type : ApusDecodable>(v: JSONValue, errorHandler: ((value: JSONValue, error: NSError) throws -> Void)? = nil) throws -> [String: Type] {
     guard let array = v.asDictionary() else {
         throw NSError(domain: "apus-apus", code: 406, userInfo: ["details": "DecodeDictionary - JSONValue is not a JSONDictionary"])
     }
@@ -63,10 +65,11 @@ func DecodeDictionary<Type : ApusDecodable>(v: JSONValue, failOnError: Bool = tr
             let item = try Type.decode(value)
             items[key as String] = item
         } catch let err as NSError {
-            if failOnError {
-                throw err
-            } else {
+            if let handler = errorHandler {
+                try handler(value: value, error: err)
                 continue
+            } else {
+                throw err
             }
         }
     }
