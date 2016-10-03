@@ -10,8 +10,8 @@ public enum JSONValue {
 }
 
 public extension JSONValue {
-    
-    static func fromJSONObject(object : AnyObject) -> JSONValue {
+
+    static func fromJSONObject(object: AnyObject) -> JSONValue {
         switch object {
         case _ as NSNull:
             return JSONValue.JSONNull
@@ -22,7 +22,7 @@ public extension JSONValue {
                     jsonDict[keyString] = JSONValue.fromJSONObject(object)
                 }
             })
-            
+
             return JSONValue.JSONDictionary(jsonDict)
         case let array as NSArray:
             var jsonArray = [JSONValue]()
@@ -31,7 +31,7 @@ public extension JSONValue {
             array.enumerateObjectsUsingBlock({ (object, index, stop) -> Void in
                 jsonArray.append(JSONValue.fromJSONObject(object))
             })
-            
+
             return JSONValue.JSONArray(jsonArray)
         case let number as NSNumber:
             if number.objCType.memory == 99 {
@@ -48,7 +48,10 @@ public extension JSONValue {
 
     static func fromJSONData(data: NSData) throws -> JSONValue {
         do {
-            let jsonObject: AnyObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.AllowFragments)
+            let jsonObject: AnyObject =
+                try NSJSONSerialization.JSONObjectWithData(
+                        data,
+                        options: NSJSONReadingOptions.AllowFragments)
             return JSONValue.fromJSONObject(jsonObject)
         } catch let error as NSError {
             throw error
@@ -58,7 +61,7 @@ public extension JSONValue {
 
 extension JSONValue {
 
-    public var count : Int {
+    public var count: Int {
         get {
             switch self {
             case let .JSONArray(array):
@@ -70,8 +73,7 @@ extension JSONValue {
             }
         }
     }
-    
-    
+
     public subscript(index: Int) -> JSONValue {
         get {
             switch self {
@@ -83,7 +85,7 @@ extension JSONValue {
             }
         }
     }
-    
+
     public subscript(key: String) -> JSONValue {
         get {
             switch self {
