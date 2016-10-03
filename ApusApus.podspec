@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "ApusApus"
-  s.version      = "0.0.5"
+  s.version      = "0.1"
   s.summary      = "More Swifty approach to parsing JSON."
 
   # This description is used to generate tags and improve search results.
