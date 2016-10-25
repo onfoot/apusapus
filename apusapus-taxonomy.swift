@@ -9,6 +9,11 @@ public enum JSONDescription {
     indirect case JSONOptional(JSONDescription)
 }
 
+public enum TaxonomyResult {
+    case Valid
+    case Invalid(field: String, message: String)
+}
+
 public extension JSONValue {
     // swiftlint:disable cyclomatic_complexity
     func matchesDescription(description: JSONDescription) -> Bool {
@@ -68,4 +73,72 @@ public extension JSONValue {
 
         return false
     }
+
+
+    func validateDescription(description: JSONDescription) -> TaxonomyResult {
+        switch description {
+        case .JSONString:
+
+            if self.asString() != nil {
+                return .Valid
+            }
+
+            return .Invalid(field: self.description, message: "Should be String")
+
+        case .JSONBool:
+
+            if self.asBool() != nil {
+                return .Valid
+            }
+
+            return .Invalid(field: self.description, message: "Should be Bool")
+
+        case .JSONNumber:
+
+            if self.asNumber() != nil {
+                return .Valid
+            }
+
+            return .Invalid(field: self.description, message: "Should be a Number")
+
+        case .JSONArray:
+
+            if self.asArray() != nil {
+                return .Valid
+            }
+
+            return .Invalid(field: self.description, message: "Should be an Array")
+
+        case let .JSONOptional(optionalDescription):
+            if self.isNull() {
+                return .Valid
+            }
+
+            switch optionalDescription {
+            case .JSONOptional:
+                return .Invalid(field: self.description, message: "Should be an Optional")
+            default:
+                return self.validateDescription(optionalDescription)
+            }
+
+        case let .JSONDictionary(descriptionDictionary):
+            guard let dictionary = self.asDictionary() else {
+                return .Invalid(field: self.description, message: "Should be a Dictionary")
+            }
+
+            for (key, value) in descriptionDictionary {
+                if dictionary[key] == nil {
+                    continue
+                }
+
+                let elementResult = dictionary[key]!.validateDescription(value)
+                if case let .Invalid(field, _) = elementResult {
+                    return .Invalid(field: key as String, message: "Value \(field) should be a \(value)")
+                }
+            }
+
+            return .Valid
+        }
+    }
+
 }
