@@ -1,60 +1,60 @@
 import Foundation
 
 public enum JSONDescription {
-    case JSONDictionary([NSString:JSONDescription])
-    case JSONArray
-    case JSONString
-    case JSONNumber
-    case JSONBool
-    indirect case JSONOptional(JSONDescription)
+    case jsonDictionary([NSString:JSONDescription])
+    case jsonArray
+    case jsonString
+    case jsonNumber
+    case jsonBool
+    indirect case jsonOptional(JSONDescription)
 }
 
 public enum TaxonomyResult {
-    case Valid
-    case Invalid(field: String, message: String)
+    case valid
+    case invalid(field: String, message: String)
 }
 
 public extension JSONValue {
     // swiftlint:disable cyclomatic_complexity
-    func matchesDescription(description: JSONDescription) -> Bool {
+    func matchesDescription(_ description: JSONDescription) -> Bool {
         switch description {
-        case .JSONString:
+        case .jsonString:
 
             if self.asString() != nil {
                 return true
             }
 
-        case .JSONBool:
+        case .jsonBool:
 
             if self.asBool() != nil {
                 return true
             }
 
-        case .JSONNumber:
+        case .jsonNumber:
 
             if self.asNumber() != nil {
                 return true
             }
 
-        case .JSONArray:
+        case .jsonArray:
 
             if self.asArray() != nil {
                 return true
             }
 
-        case let .JSONOptional(optionalDescription):
+        case let .jsonOptional(optionalDescription):
             if self.isNull() {
                 return true
             }
 
             switch optionalDescription {
-            case .JSONOptional:
+            case .jsonOptional:
                 return false
             default:
                 return self.matchesDescription(optionalDescription)
             }
 
-        case let .JSONDictionary(descriptionDictionary):
+        case let .jsonDictionary(descriptionDictionary):
             guard let dictionary = self.asDictionary() else {
                 return false
             }
@@ -75,55 +75,55 @@ public extension JSONValue {
     }
 
 
-    func validateDescription(description: JSONDescription) -> TaxonomyResult {
+    func validateDescription(_ description: JSONDescription) -> TaxonomyResult {
         switch description {
-        case .JSONString:
+        case .jsonString:
 
             if self.asString() != nil {
-                return .Valid
+                return .valid
             }
 
-            return .Invalid(field: self.description, message: "Should be String")
+            return .invalid(field: self.description, message: "Should be String")
 
-        case .JSONBool:
+        case .jsonBool:
 
             if self.asBool() != nil {
-                return .Valid
+                return .valid
             }
 
-            return .Invalid(field: self.description, message: "Should be Bool")
+            return .invalid(field: self.description, message: "Should be Bool")
 
-        case .JSONNumber:
+        case .jsonNumber:
 
             if self.asNumber() != nil {
-                return .Valid
+                return .valid
             }
 
-            return .Invalid(field: self.description, message: "Should be a Number")
+            return .invalid(field: self.description, message: "Should be a Number")
 
-        case .JSONArray:
+        case .jsonArray:
 
             if self.asArray() != nil {
-                return .Valid
+                return .valid
             }
 
-            return .Invalid(field: self.description, message: "Should be an Array")
+            return .invalid(field: self.description, message: "Should be an Array")
 
-        case let .JSONOptional(optionalDescription):
+        case let .jsonOptional(optionalDescription):
             if self.isNull() {
-                return .Valid
+                return .valid
             }
 
             switch optionalDescription {
-            case .JSONOptional:
-                return .Invalid(field: self.description, message: "Should be an Optional")
+            case .jsonOptional:
+                return .invalid(field: self.description, message: "Should be an Optional")
             default:
                 return self.validateDescription(optionalDescription)
             }
 
-        case let .JSONDictionary(descriptionDictionary):
+        case let .jsonDictionary(descriptionDictionary):
             guard let dictionary = self.asDictionary() else {
-                return .Invalid(field: self.description, message: "Should be a Dictionary")
+                return .invalid(field: self.description, message: "Should be a Dictionary")
             }
 
             for (key, value) in descriptionDictionary {
@@ -132,12 +132,12 @@ public extension JSONValue {
                 }
 
                 let elementResult = dictionary[key]!.validateDescription(value)
-                if case let .Invalid(field, _) = elementResult {
-                    return .Invalid(field: key as String, message: "Value \(field) should be a \(value)")
+                if case let .invalid(field, _) = elementResult {
+                    return .invalid(field: key as String, message: "Value \(field) should be a \(value)")
                 }
             }
 
-            return .Valid
+            return .valid
         }
     }
 

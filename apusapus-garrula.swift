@@ -4,13 +4,13 @@ extension JSONValue : CustomStringConvertible {
     public var description: String {
         get {
             switch self {
-            case let .JSONString(string):
+            case let .jsonString(string):
                 let escapedString =
-                    string.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
+                    string.replacingOccurrences(of: "\"", with: "\\\"")
                 return "\"\(escapedString)\""
-            case let .JSONBool(number):
+            case let .jsonBool(number):
                 return number.boolValue ? "true" : "false"
-            case let .JSONDictionary(jsonObject):
+            case let .jsonDictionary(jsonObject):
                 var descr = "{"
                 var first = true
 
@@ -24,9 +24,9 @@ extension JSONValue : CustomStringConvertible {
                 }
                 descr += "\n}"
                 return descr
-            case let .JSONNumber(number):
+            case let .jsonNumber(number):
                 return "\(number)"
-            case let .JSONArray(array):
+            case let .jsonArray(array):
                 var descr = "["
                 var first = true
                 for value in array {
@@ -39,7 +39,7 @@ extension JSONValue : CustomStringConvertible {
                 }
                 descr += "\n]"
                 return descr
-            case .JSONNull:
+            case .jsonNull:
                 return "null"
             }
         }

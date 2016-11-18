@@ -3,7 +3,7 @@ import Foundation
 public extension JSONValue {
     func asDictionary () -> [NSString:JSONValue]? {
 
-        if case let .JSONDictionary(dict) = self {
+        if case let .jsonDictionary(dict) = self {
             return dict
         }
 
@@ -11,7 +11,7 @@ public extension JSONValue {
     }
 
     func asArray () -> [JSONValue]? {
-        if case let .JSONArray(array) = self {
+        if case let .jsonArray(array) = self {
             return array
         }
 
@@ -19,7 +19,7 @@ public extension JSONValue {
     }
 
     func asString () -> String? {
-        if case let .JSONString(string) = self {
+        if case let .jsonString(string) = self {
             return string as String
         }
 
@@ -27,7 +27,7 @@ public extension JSONValue {
     }
 
     func asNumber () -> NSNumber? {
-        if case let .JSONNumber(number) = self {
+        if case let .jsonNumber(number) = self {
             return number
         }
 
@@ -35,7 +35,7 @@ public extension JSONValue {
     }
 
     func asBool () -> Bool? {
-        if case let .JSONBool(bool) = self {
+        if case let .jsonBool(bool) = self {
             return bool.boolValue
         }
 
@@ -43,7 +43,7 @@ public extension JSONValue {
     }
 
     func isNull () -> Bool {
-        if case .JSONNull = self {
+        if case .jsonNull = self {
             return true
         }
 

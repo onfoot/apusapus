@@ -1,57 +1,57 @@
 import Foundation
 
 public enum JSONValue {
-    case JSONDictionary([NSString:JSONValue])
-    case JSONArray([JSONValue])
-    case JSONString(NSString)
-    case JSONNumber(NSNumber)
-    case JSONBool(NSNumber)
-    case JSONNull
+    case jsonDictionary([NSString: JSONValue])
+    case jsonArray([JSONValue])
+    case jsonString(NSString)
+    case jsonNumber(NSNumber)
+    case jsonBool(NSNumber)
+    case jsonNull
 }
 
 public extension JSONValue {
 
-    static func fromJSONObject(object: AnyObject) -> JSONValue {
+    static func fromJSONObject(_ object: Any) -> JSONValue {
         switch object {
         case _ as NSNull:
-            return JSONValue.JSONNull
+            return JSONValue.jsonNull
         case let dict as NSDictionary:
             var jsonDict = [NSString:JSONValue]()
-            dict.enumerateKeysAndObjectsUsingBlock({ (key, object, stop) -> Void in
+            dict.enumerateKeysAndObjects({ (key, object, stop) -> Void in
                 if let keyString = key as? NSString {
                     jsonDict[keyString] = JSONValue.fromJSONObject(object)
                 }
             })
 
-            return JSONValue.JSONDictionary(jsonDict)
+            return JSONValue.jsonDictionary(jsonDict)
         case let array as NSArray:
             var jsonArray = [JSONValue]()
             jsonArray.reserveCapacity(array.count)
 
-            array.enumerateObjectsUsingBlock({ (object, index, stop) -> Void in
+            array.enumerateObjects({ (object, index, stop) -> Void in
                 jsonArray.append(JSONValue.fromJSONObject(object))
             })
 
-            return JSONValue.JSONArray(jsonArray)
+            return JSONValue.jsonArray(jsonArray)
         case let number as NSNumber:
-            if number.objCType.memory == 99 {
-                return JSONValue.JSONBool(number)
+            if number.objCType.pointee == 99 {
+                return JSONValue.jsonBool(number)
             } else {
-                return JSONValue.JSONNumber(number)
+                return JSONValue.jsonNumber(number)
             }
         case let string as String :
-            return JSONValue.JSONString(string)
+            return JSONValue.jsonString(string as NSString)
         default:
-            return JSONValue.JSONNull
+            return JSONValue.jsonNull
         }
     }
 
-    static func fromJSONData(data: NSData) throws -> JSONValue {
+    static func fromJSONData(_ data: Data) throws -> JSONValue {
         do {
-            let jsonObject: AnyObject =
-                try NSJSONSerialization.JSONObjectWithData(
-                        data,
-                        options: NSJSONReadingOptions.AllowFragments)
+            let jsonObject: Any =
+                try JSONSerialization.jsonObject(
+                        with: data,
+                        options: JSONSerialization.ReadingOptions.allowFragments)
             return JSONValue.fromJSONObject(jsonObject)
         } catch let error as NSError {
             throw error
@@ -64,9 +64,9 @@ extension JSONValue {
     public var count: Int {
         get {
             switch self {
-            case let .JSONArray(array):
+            case let .jsonArray(array):
                 return array.count
-            case let .JSONDictionary(dict):
+            case let .jsonDictionary(dict):
                 return dict.count
             default:
                 return 0
@@ -77,11 +77,11 @@ extension JSONValue {
     public subscript(index: Int) -> JSONValue {
         get {
             switch self {
-            case let .JSONArray(array):
+            case let .jsonArray(array):
                 precondition(index >= 0 && index < array.count, "Array index out of bounds")
                 return array[index]
             default:
-                return .JSONNull
+                return .jsonNull
             }
         }
     }
@@ -89,14 +89,10 @@ extension JSONValue {
     public subscript(key: String) -> JSONValue {
         get {
             switch self {
-            case let .JSONDictionary(dict):
-                if let value = dict[key] {
-                    return value
-                } else {
-                    return .JSONNull
-                }
+            case let .jsonDictionary(dict as [String: JSONValue]):
+                return dict[key] ?? .jsonNull
             default:
-                return .JSONNull
+                return .jsonNull
             }
         }
     }

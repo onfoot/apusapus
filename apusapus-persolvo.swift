@@ -2,12 +2,12 @@ import Foundation
 
 public protocol ApusDecodable {
     static var jsonDescription: JSONDescription { get }
-    static func decode(jsonValue: JSONValue) throws -> Self
+    static func decode(_ jsonValue: JSONValue) throws -> Self
 }
 
 func DecodeArray<Type: ApusDecodable>(
-        jsonValue: JSONValue,
-        errorHandler: ((value: JSONValue, error: NSError) throws -> Void)? = nil) throws -> [Type] {
+        _ jsonValue: JSONValue,
+        errorHandler: ((_ value: JSONValue, _ error: NSError) throws -> Void)? = nil) throws -> [Type] {
 
     guard let array = jsonValue.asArray() else {
         throw NSError(domain: "apus-apus",
@@ -23,7 +23,7 @@ func DecodeArray<Type: ApusDecodable>(
             items.append(item)
         } catch let err as NSError {
             if let handler = errorHandler {
-                try handler(value: value, error: err)
+                try handler(value, err)
                 continue
             } else {
                 throw err
@@ -35,8 +35,8 @@ func DecodeArray<Type: ApusDecodable>(
 }
 
 func DecodeArray<Type: ApusDecodable>(
-        jsonValue: JSONValue,
-        errorHandler: ((value: JSONValue, error: NSError) throws -> Void)? = nil,
+        _ jsonValue: JSONValue,
+        errorHandler: ((_ value: JSONValue, _ error: NSError) throws -> Void)? = nil,
         bySpreading spread: (Type) -> (key: String, value: Type)) throws -> [String: Type] {
 
     guard let array = jsonValue.asArray() else {
@@ -53,7 +53,7 @@ func DecodeArray<Type: ApusDecodable>(
             items[key] = item
         } catch let err as NSError {
             if let handler = errorHandler {
-                try handler(value: value, error: err)
+                try handler(value, err)
                 continue
             } else {
                 throw err
@@ -65,9 +65,9 @@ func DecodeArray<Type: ApusDecodable>(
 }
 
 func DecodeDictionary<Type: ApusDecodable>(
-        jsonValue: JSONValue,
-        errorHandler: ((value: JSONValue,
-                        error: NSError
+        _ jsonValue: JSONValue,
+        errorHandler: ((_ value: JSONValue,
+                        _ error: NSError
                         ) throws -> Void)? = nil) throws -> [String: Type] {
 
     guard let array = jsonValue.asDictionary() else {
@@ -84,7 +84,7 @@ func DecodeDictionary<Type: ApusDecodable>(
             items[key as String] = item
         } catch let err as NSError {
             if let handler = errorHandler {
-                try handler(value: value, error: err)
+                try handler(value, err)
                 continue
             } else {
                 throw err
